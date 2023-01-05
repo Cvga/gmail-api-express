@@ -2,7 +2,7 @@
 const app = require('./app');
 
 //Setting PORT variable
-const PORT = process.env.PORT || 3000
+const PORT = process.env.PORT || 8000
 
 //Listening app on PORT
 app.listen(PORT, () => {
