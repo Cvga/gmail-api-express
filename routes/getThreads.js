@@ -21,16 +21,18 @@ router.get("/threads", async (req, res) => {
     );
 
     const openAuthenticate = async () => {
+      console.log("openAuthenticate");
       const authorizeUrl = oAuth2Client.generateAuthUrl({
         access_type: "offline",
         scope: "https://www.googleapis.com/auth/gmail.readonly",
         prompt: "consent",
       });
 
-      open(authorizeUrl, { wait: false }).then((cp) => cp.unref());
+      open(authorizeUrl, { wait: false, }).then((cp) => cp.unref());
     };
 
     const getAuthClientByCode = async (code) => {
+      console.log("getAuthClientByCode");
       if (code) {
         console.log("Authentication successful! Please return to the console.");
 
