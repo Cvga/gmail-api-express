@@ -22,7 +22,7 @@ router.get('/threads', async (req,res)=> {
             const oAuth2Client = new OAuth2Client(
               keys.web.client_id,
               keys.web.client_secret,
-              keys.web.redirect_uris[0]
+              keys.web.redirect_uris[1]
             );
         
             const authorizeUrl = oAuth2Client.generateAuthUrl({
@@ -35,7 +35,7 @@ router.get('/threads', async (req,res)=> {
               .createServer(async (req, res) => {
                 try {
                   if (req.url.indexOf('/') > -1) {
-                    const qs = new url.URL(req.url, 'http://localhost:3000')
+                    const qs = new url.URL(req.url, 'http://localhost:8000')
                       .searchParams;
                     const code = qs.get('code');
                     console.log(`Code is ${code}`);
@@ -50,7 +50,7 @@ router.get('/threads', async (req,res)=> {
                   reject(e);
                 }
               })
-              .listen(3000, () => {
+              .listen(8000, () => {
                 open(authorizeUrl, {wait: false}).then(cp => cp.unref());
               });
             destroyer(server);
