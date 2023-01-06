@@ -28,7 +28,11 @@ router.get("/threads", async (req, res) => {
         prompt: "consent",
       });
 
-      open(authorizeUrl, { wait: false, }).then((cp) => cp.unref());
+      console.log({ authorizeUrl });
+
+      open(authorizeUrl, { wait: false, newInstance: true });
+
+      console.log("Post OPEN");
     };
 
     const getAuthClientByCode = async (code) => {
