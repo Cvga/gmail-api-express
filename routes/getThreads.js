@@ -19,7 +19,7 @@ router.get("/threads", async (req, res) => {
       keys.web.client_secret,
       keys.web.redirect_uris[0]
     );
-    
+
 
     const openAuthenticate = async () => {
       console.log("openAuthenticate");
@@ -31,12 +31,7 @@ router.get("/threads", async (req, res) => {
 
       console.log({ authorizeUrl });
 
-      const response = await open(authorizeUrl, {
-        wait: false,
-        newInstance: true,
-      });
-
-      console.log({ response });
+      res.status(301).redirect(authorizeUrl);
 
       console.log("Post OPEN");
     };
