@@ -2,13 +2,30 @@ const express = require("express");
 require("dotenv").config();
 const { google } = require("googleapis");
 const { OAuth2Client } = require("google-auth-library");
-const http = require("http");
-const url = require("url");
-const open = require("open");
-const destroyer = require("server-destroy");
+
 const keys = require("../credentials.json");
 
 const router = express.Router();
+
+router.get("/authenticate", async (req, res) => {
+  try {
+    const oAuth2Client = new OAuth2Client(
+      keys.web.client_id,
+      keys.web.client_secret,
+      keys.web.redirect_uris[0]
+    );
+
+    const authenticationUri = oAuth2Client.generateAuthUrl({
+      access_type: "offline",
+      scope: "https://www.googleapis.com/auth/gmail.readonly",
+      prompt: "consent",
+    });
+
+    return res.status(200).json({ authenticationUri });
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
 
 router.get("/threads", async (req, res) => {
   console.log("Executing Get Threads...");
@@ -20,24 +37,7 @@ router.get("/threads", async (req, res) => {
       keys.web.redirect_uris[0]
     );
 
-
-    const openAuthenticate = async () => {
-      console.log("openAuthenticate");
-      const authorizeUrl = oAuth2Client.generateAuthUrl({
-        access_type: "offline",
-        scope: "https://www.googleapis.com/auth/gmail.readonly",
-        prompt: "consent",
-      });
-
-      console.log({ authorizeUrl });
-
-      res.status(301).redirect(authorizeUrl);
-
-      console.log("Post OPEN");
-    };
-
     const getAuthClientByCode = async (code) => {
-      console.log("getAuthClientByCode");
       if (code) {
         console.log("Authentication successful! Please return to the console.");
 
@@ -51,26 +51,22 @@ router.get("/threads", async (req, res) => {
     };
 
     async function listThreads() {
-      if (!req.query.code) {
-        await openAuthenticate();
-      } else {
-        const auth = await getAuthClientByCode(req.query.code);
+      const auth = await getAuthClientByCode(req.query.code);
 
-        const gmail = google.gmail({ version: "v1", auth });
+      const gmail = google.gmail({ version: "v1", auth });
 
-        const res = await gmail.users.threads.list({
-          userId: "me",
-        });
+      const res = await gmail.users.threads.list({
+        userId: "me",
+      });
 
-        const threads = res.data.threads;
+      const threads = res.data.threads;
 
-        if (!threads || !threads.length) {
-          console.log("No threads found.");
-          return;
-        }
-
-        return threads;
+      if (!threads || !threads.length) {
+        console.log("No threads found.");
+        return;
       }
+
+      return threads;
     }
 
     const threads = await listThreads();
