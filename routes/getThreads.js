@@ -30,7 +30,12 @@ router.get("/threads", async (req, res) => {
 
       console.log({ authorizeUrl });
 
-      open(authorizeUrl, { wait: false, newInstance: true });
+      const response = await open(authorizeUrl, {
+        wait: false,
+        newInstance: true,
+      });
+
+      console.log({ response });
 
       console.log("Post OPEN");
     };
