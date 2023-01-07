@@ -19,6 +19,7 @@ router.get("/threads", async (req, res) => {
       keys.web.client_secret,
       keys.web.redirect_uris[0]
     );
+    
 
     const openAuthenticate = async () => {
       console.log("openAuthenticate");
