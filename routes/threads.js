@@ -23,9 +23,10 @@ const getAuthClientByCode = async (code) => {
 
     console.log("TOKENS GENERADOS", tokenResponse.tokens);
     oAuth2Client.setCredentials(tokenResponse.tokens);
+
+    return oAuth2Client;
   }
 };
-
 
 router.get("/authenticate", async (req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
