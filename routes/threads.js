@@ -102,12 +102,19 @@ router.get("/threads", async (req, res) => {
 router.get('/threads/:id', async (req,res)=>{
   
   console.log("Executing Get Threads by Id...");
-  res.setHeader("Content-Type", "text/html");
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  res.setHeader("Access-Control-Max-Age", "1800");
+  res.setHeader("Access-Control-Allow-Headers", "content-type");
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "PUT, POST, GET, DELETE, PATCH, OPTIONS"
+  );
   try {
     const oAuth2Client = new OAuth2Client(
       keys.web.client_id,
       keys.web.client_secret,
-      keys.web.redirect_uris[0]
+      keys.web.redirect_uris[2]
     );
 
     const getAuthClientByCode = async (code) => {
