@@ -37,8 +37,19 @@ router.get("/authenticate", async (req, res) => {
 });
 
 router.get("/threads", async (req, res) => {
+
+
+
   console.log("Executing Get Threads...");
-  res.setHeader("Content-Type", "text/html");
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  res.setHeader("Access-Control-Max-Age", "1800");
+  res.setHeader("Access-Control-Allow-Headers", "content-type");
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "PUT, POST, GET, DELETE, PATCH, OPTIONS"
+  );
+
   try {
     const oAuth2Client = new OAuth2Client(
       keys.web.client_id,
