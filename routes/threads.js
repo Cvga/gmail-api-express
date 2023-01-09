@@ -18,12 +18,8 @@ const getAuthClientByCode = async (code) => {
     console.log("Authentication successful! Please return to the console.");
 
     const tokenResponse = await oAuth2Client.getToken(code);
-
-
-    console.log("TOKEN GENERADO: ", tokenResponse.tokens)
-
+    console.log("TOKENS GENERADOS", tokenResponse.tokens);
     oAuth2Client.setCredentials(tokenResponse.tokens);
-    console.info("Tokens acquired.");
 
     return oAuth2Client;
   }
@@ -64,8 +60,6 @@ router.get("/threads", async (req, res) => {
   );
 
   try {
-  
-
     async function listThreads() {
       const auth = await getAuthClientByCode(req.query.code);
 
@@ -110,9 +104,11 @@ router.get("/threads/:id", async (req, res) => {
   console.log({ code: req.query.code, id: req.params.id });
 
   try {
-
     async function getThreadId(id) {
+      console.log("GENERATE TOKEN");
       const auth = await getAuthClientByCode(req.query.code);
+
+      console.log("GENERATED AUTH: ", auth);
 
       const gmail = google.gmail({ version: "v1", auth });
 
