@@ -98,7 +98,6 @@ router.get("/threads", async (req, res) => {
   }
 
   router.get("/threads/:id", async (req, res) => {
-    console.log({ code: req.query.code, id: request.params.id });
 
     console.log("Executing Get Threads by Id...");
     res.setHeader("Access-Control-Allow-Origin", "*");
@@ -109,6 +108,9 @@ router.get("/threads", async (req, res) => {
       "Access-Control-Allow-Methods",
       "PUT, POST, GET, DELETE, PATCH, OPTIONS"
     );
+
+    console.log({ code: req.query.code, id: request.params.id });
+
     try {
       const oAuth2Client = new OAuth2Client(
         keys.web.client_id,
