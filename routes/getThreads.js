@@ -12,7 +12,7 @@ router.get("/authenticate", async (req, res) => {
     const oAuth2Client = new OAuth2Client(
       keys.web.client_id,
       keys.web.client_secret,
-      keys.web.redirect_uris[0]
+      keys.web.redirect_uris[2]
     );
 
     const authenticationUri = oAuth2Client.generateAuthUrl({
