@@ -4,9 +4,14 @@ const { google } = require("googleapis");
 const { OAuth2Client } = require("google-auth-library");
 
 const keys = require("../credentials.json");
-const { request } = require("express");
 
 const router = express.Router();
+
+const oAuth2Client = new OAuth2Client(
+  keys.web.client_id,
+  keys.web.client_secret,
+  keys.web.redirect_uris[2]
+);
 
 router.get("/authenticate", async (req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -19,12 +24,6 @@ router.get("/authenticate", async (req, res) => {
   );
 
   try {
-    const oAuth2Client = new OAuth2Client(
-      keys.web.client_id,
-      keys.web.client_secret,
-      keys.web.redirect_uris[2]
-    );
-
     const authenticationUri = oAuth2Client.generateAuthUrl({
       access_type: "offline",
       scope: "https://www.googleapis.com/auth/gmail.readonly",
@@ -49,12 +48,6 @@ router.get("/threads", async (req, res) => {
   );
 
   try {
-    const oAuth2Client = new OAuth2Client(
-      keys.web.client_id,
-      keys.web.client_secret,
-      keys.web.redirect_uris[2]
-    );
-
     const getAuthClientByCode = async (code) => {
       if (code) {
         console.log("Authentication successful! Please return to the console.");
@@ -112,12 +105,6 @@ router.get("/threads/:id", async (req, res) => {
   console.log({ code: req.query.code, id: req.params.id });
 
   try {
-    const oAuth2Client = new OAuth2Client(
-      keys.web.client_id,
-      keys.web.client_secret,
-      keys.web.redirect_uris[2]
-    );
-
     const getAuthClientByCode = async (code) => {
       if (code) {
         console.log("Authentication successful! Please return to the console.");
