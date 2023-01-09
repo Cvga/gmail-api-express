@@ -13,6 +13,22 @@ const oAuth2Client = new OAuth2Client(
   keys.web.redirect_uris[2]
 );
 
+const getAuthClientByCode = async (code) => {
+  if (code) {
+    console.log("Authentication successful! Please return to the console.");
+
+    const tokenResponse = await oAuth2Client.getToken(code);
+
+
+    console.log("TOKEN GENERADO: ", tokenResponse.tokens)
+
+    oAuth2Client.setCredentials(tokenResponse.tokens);
+    console.info("Tokens acquired.");
+
+    return oAuth2Client;
+  }
+};
+
 router.get("/authenticate", async (req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Credentials", "true");
@@ -48,18 +64,7 @@ router.get("/threads", async (req, res) => {
   );
 
   try {
-    const getAuthClientByCode = async (code) => {
-      if (code) {
-        console.log("Authentication successful! Please return to the console.");
-
-        const tokenResponse = await oAuth2Client.getToken(code);
-
-        oAuth2Client.setCredentials(tokenResponse.tokens);
-        console.info("Tokens acquired.");
-
-        return oAuth2Client;
-      }
-    };
+  
 
     async function listThreads() {
       const auth = await getAuthClientByCode(req.query.code);
@@ -105,18 +110,6 @@ router.get("/threads/:id", async (req, res) => {
   console.log({ code: req.query.code, id: req.params.id });
 
   try {
-    const getAuthClientByCode = async (code) => {
-      if (code) {
-        console.log("Authentication successful! Please return to the console.");
-
-        const tokenResponse = await oAuth2Client.getToken(code);
-
-        oAuth2Client.setCredentials(tokenResponse.tokens);
-        console.info("Tokens acquired.");
-
-        return oAuth2Client;
-      }
-    };
 
     async function getThreadId(id) {
       const auth = await getAuthClientByCode(req.query.code);
