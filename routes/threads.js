@@ -109,7 +109,7 @@ router.get("/threads/:id", async (req, res) => {
     "PUT, POST, GET, DELETE, PATCH, OPTIONS"
   );
 
-  console.log({ code: req.query.code, id: request.params.id });
+  console.log({ code: req.query.code, id: req.params.id });
 
   try {
     const oAuth2Client = new OAuth2Client(
