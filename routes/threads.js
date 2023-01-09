@@ -17,8 +17,10 @@ const getAuthClientByCode = async (code) => {
   if (code) {
     console.log("Authentication successful! Please return to the console.");
 
-    console.log("Credentials: ", oAuth2Client.credentials);
-    if (!oAuth2Client.credentials) {
+    if (
+      !oAuth2Client.credentials.access_token &&
+      !oAuth2Client.credentials.refresh_token
+    ) {
       const tokenResponse = await oAuth2Client.getToken(code);
 
       console.log("TOKENS GENERADOS", tokenResponse.tokens);
