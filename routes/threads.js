@@ -18,11 +18,14 @@ const getAuthClientByCode = async (code) => {
     console.log("Authentication successful! Please return to the console.");
 
     console.log("Credentials: ", oAuth2Client.credentials);
+    if (!oAuth2Client.credentials) {
+      const tokenResponse = await oAuth2Client.getToken(code);
 
-    const tokenResponse = await oAuth2Client.getToken(code);
-
-    console.log("TOKENS GENERADOS", tokenResponse.tokens);
-    oAuth2Client.setCredentials(tokenResponse.tokens);
+      console.log("TOKENS GENERADOS", tokenResponse.tokens);
+      oAuth2Client.setCredentials(tokenResponse.tokens);
+    } else {
+      oAuth2Client.refreshAccessToken();
+    }
 
     return oAuth2Client;
   }
