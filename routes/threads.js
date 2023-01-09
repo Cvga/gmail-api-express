@@ -96,100 +96,97 @@ router.get("/threads", async (req, res) => {
     console.log(`Error executing Get Threads: ${err}`);
     return res.status(err.code).send(err.message);
   }
+});
 
-  router.get("/threads/:id", async (req, res) => {
+router.get("/threads/:id", async (req, res) => {
+  console.log("Executing Get Threads by Id...");
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  res.setHeader("Access-Control-Max-Age", "1800");
+  res.setHeader("Access-Control-Allow-Headers", "content-type");
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "PUT, POST, GET, DELETE, PATCH, OPTIONS"
+  );
 
-    console.log("Executing Get Threads by Id...");
-    res.setHeader("Access-Control-Allow-Origin", "*");
-    res.setHeader("Access-Control-Allow-Credentials", "true");
-    res.setHeader("Access-Control-Max-Age", "1800");
-    res.setHeader("Access-Control-Allow-Headers", "content-type");
-    res.setHeader(
-      "Access-Control-Allow-Methods",
-      "PUT, POST, GET, DELETE, PATCH, OPTIONS"
+  console.log({ code: req.query.code, id: request.params.id });
+
+  try {
+    const oAuth2Client = new OAuth2Client(
+      keys.web.client_id,
+      keys.web.client_secret,
+      keys.web.redirect_uris[2]
     );
 
-    console.log({ code: req.query.code, id: request.params.id });
+    const getAuthClientByCode = async (code) => {
+      if (code) {
+        console.log("Authentication successful! Please return to the console.");
 
-    try {
-      const oAuth2Client = new OAuth2Client(
-        keys.web.client_id,
-        keys.web.client_secret,
-        keys.web.redirect_uris[2]
-      );
+        const tokenResponse = await oAuth2Client.getToken(code);
 
-      const getAuthClientByCode = async (code) => {
-        if (code) {
-          console.log(
-            "Authentication successful! Please return to the console."
-          );
+        oAuth2Client.setCredentials(tokenResponse.tokens);
+        console.info("Tokens acquired.");
 
-          const tokenResponse = await oAuth2Client.getToken(code);
+        return oAuth2Client;
+      }
+    };
 
-          oAuth2Client.setCredentials(tokenResponse.tokens);
-          console.info("Tokens acquired.");
+    async function getThreadId(id) {
+      const auth = await getAuthClientByCode(req.query.code);
 
-          return oAuth2Client;
-        }
-      };
+      const gmail = google.gmail({ version: "v1", auth });
 
-      async function getThreadId(id) {
-        const auth = await getAuthClientByCode(req.query.code);
+      const res = await gmail.users.threads.get({
+        id: id,
+        userId: "me",
+      });
 
-        const gmail = google.gmail({ version: "v1", auth });
+      const thread = res.data;
 
-        const res = await gmail.users.threads.get({
-          id: id,
-          userId: "me",
-        });
-
-        const thread = res.data;
-
-        if (!thread || thread.length === 0) {
-          console.log("No threads found.");
-          return;
-        }
-
-        let rawConversation = thread.messages;
-
-        let conversation = [];
-
-        rawConversation.forEach((rawMessage) => {
-          const header = rawMessage.payload.headers;
-
-          var date = header.filter((obj) => {
-            return obj.name === "Date";
-          });
-
-          var from = header.filter((obj) => {
-            return obj.name === "From";
-          });
-
-          var to = header.filter((obj) => {
-            return obj.name === "To";
-          });
-
-          var message = {
-            to: to[0].value,
-            from: from[0].value,
-            date: date[0].value,
-            message: rawMessage.snippet,
-          };
-          conversation.push(message);
-        });
-        return conversation;
+      if (!thread || thread.length === 0) {
+        console.log("No threads found.");
+        return;
       }
 
-      const conversation = await getThreadId(req.params.id);
+      let rawConversation = thread.messages;
 
-      console.log("Get Threads by Id executed successfully...");
+      let conversation = [];
 
-      res.status(200).json(conversation);
-    } catch (err) {
-      console.log(`Error executing Get Threads by Id: ${err}`);
-      return res.status(err.code).send(err.message);
+      rawConversation.forEach((rawMessage) => {
+        const header = rawMessage.payload.headers;
+
+        var date = header.filter((obj) => {
+          return obj.name === "Date";
+        });
+
+        var from = header.filter((obj) => {
+          return obj.name === "From";
+        });
+
+        var to = header.filter((obj) => {
+          return obj.name === "To";
+        });
+
+        var message = {
+          to: to[0].value,
+          from: from[0].value,
+          date: date[0].value,
+          message: rawMessage.snippet,
+        };
+        conversation.push(message);
+      });
+      return conversation;
     }
-  });
+
+    const conversation = await getThreadId(req.params.id);
+
+    console.log("Get Threads by Id executed successfully...");
+
+    res.status(200).json(conversation);
+  } catch (err) {
+    console.log(`Error executing Get Threads by Id: ${err}`);
+    return res.status(err.code).send(err.message);
+  }
 });
 
 module.exports = router;
